@@ -1,12 +1,61 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import axios,{AxiosResponse,AxiosRequestConfig} from './axios';
+const baseURL = "http://localhost:8080";
+interface User{
+    name:string
+    password: string
+}
+let user : User ={
+    name:'yehuo',
+    password:'123456'
+}
+// let request = axios.interceptors.request.use((config:AxiosRequestConfig):AxiosRequestConfig=>{
+//     config.headers!.name+='1'
+//     return config
+// })
+// axios.interceptors.request.use((config:AxiosRequestConfig):AxiosRequestConfig=>{
+//     config.headers!.name+='2'
+//     return config
+// })
+// axios.interceptors.response.use((response:AxiosResponse):AxiosResponse=>{
+//     response.data.name+='3'
+//     return response
+// })
+// let response = axios.interceptors.response.use((response:AxiosResponse):AxiosResponse=>{
+//     response.data.name+='4'
+//     return response
+// })
+// axios.interceptors.request.eject(request)
+// axios.interceptors.response.eject(response)
+const CanceToken = axios.CancelToken
+const source =CanceToken.source()
+const isCancel = axios.isCancel
 
-ReactDOM.render(<App />, document.getElementById('root'));
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+axios({
+    method:'post',
+    url:baseURL+'/post',
+    data:user,
+    headers:{
+        // 'Content-Type':'application/json',
+        // 'name':'bbbb'
+    },
+    timeout:1000,
+    cancelToken:source.token
+    // transformRequest:(data,head)=>{     
+    //     head['common']['name']='kcvxcvc'
+    //     return data
+    // },
+    // transformResponse:(response)=>{
+    //     console.log(response);      
+    //     return response.data
+    // }
+}).then((response:AxiosResponse<User>)=>{
+    console.log(response);
+    return response.data
+}).catch(err=>{
+    if(isCancel(err)){
+        console.log(err,'iscancel')
+    }
+})
+
+// source.cancel('用户取消')
